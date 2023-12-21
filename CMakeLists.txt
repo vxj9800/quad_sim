@@ -12,26 +12,27 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(Python REQUIRED)
+find_package(Boost REQUIRED)
 
 # Generate some C/C++ code using SymPy
-execute_process(
-  COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/genGeomVects.py
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
+# execute_process(
+#   COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eomGenerator.py
+#   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+# )
 
 # Add target
 add_executable(solve_physics
   src/eomSolverNode.cpp
   src/solve_physics.cpp
 )
-ament_target_dependencies(anim_window rclcpp std_msgs geometry_msgs builtin_interfaces)
-target_include_directories(anim_window PUBLIC
+ament_target_dependencies(solve_physics rclcpp std_msgs geometry_msgs builtin_interfaces)
+target_include_directories(solve_physics PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-target_compile_features(anim_window PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(solve_physics PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 # Move binaries to lib folder
-install(TARGETS anim_window
+install(TARGETS solve_physics
   DESTINATION lib/${PROJECT_NAME}
 )
 
