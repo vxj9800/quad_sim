@@ -1,31 +1,31 @@
+// Add Standard c++ headers
 #include <iostream>
-#include <boost/array.hpp>
 
-#include <boost/numeric/odeint.hpp>
-
-using namespace std;
-using namespace boost::numeric::odeint;
-
-const double sigma = 10.0;
-const double R = 28.0;
-const double b = 8.0 / 3.0;
-
-typedef boost::array<double, 3> state_type;
-
-void lorenz(const state_type &x, state_type &dxdt, double t)
-{
-    dxdt[0] = sigma * (x[1] - x[0]);
-    dxdt[1] = R * x[0] - x[1] - x[0] * x[2];
-    dxdt[2] = -b * x[2] + x[0] * x[1];
-}
-
-void write_lorenz(const state_type &x, const double t)
-{
-    cout << t << '\t' << x[0] << '\t' << x[1] << '\t' << x[2] << endl;
-}
+// Add package headers
+#include <quad_sim/quadEomSystem.h>
 
 int main(int argc, char **argv)
 {
-    state_type x = {10.0, 1.0, 1.0}; // initial conditions
-    integrate(lorenz, x, 0.0, 25.0, 0.1, write_lorenz);
+    // Initialize the system
+    quadEomSystem quad;
+
+    // Initialize ODE solver
+    boost::numeric::odeint::adams_bashforth_moulton<5, std::vector<double>> odeSolver;
+
+    std::chrono::high_resolution_clock solverClock;
+
+    // Initialize the solver
+    odeSolver.initialize(boost::numeric::odeint::runge_kutta_fehlberg78<std::vector<double>>(), quad, quad.q, quad.solverT, quad.solverDT);
+
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    for (int i = 0; i < 10000; ++i)
+    {
+        std::chrono::high_resolution_clock::time_point start = solverClock.now();
+        odeSolver.do_step(quad, quad.q, quad.solverT, quad.solverDT);
+        quad.solverT += quad.solverDT;
+        std::cout << i << '\t' << quad.q[7] << '\t' << quad.q[8] << '\t' << quad.q[9] << '\t' << quad.q[10] << std::endl;
+        while (std::chrono::duration_cast<std::chrono::duration<double>>(solverClock.now() - start).count() < 0.001);
+    }
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
 }

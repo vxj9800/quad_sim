@@ -117,7 +117,7 @@ BL = [A,B,C,D,E];
 ## Apply Kane's method
 KM = sympy.physics.mechanics.KanesMethod(N, q_ind=[q1, q2, q3, e0, e1, e2, e3, q4, q5, q6, q7], u_ind=[u1, u2, u3, w1, w2, w3, u4, u5, u6, u7], kd_eqs=kd);
 (fr, frs) = KM.kanes_equations(bodies=BL, loads=FL);
-COEF = KM.mass_matrix;
+COEF = KM.mass_matrix_full;
 RHS = KM.forcing_full;
 
 ## Substitute state variables
@@ -131,7 +131,7 @@ rhs = sympy.MatrixSymbol("rhs",RHS.shape[0],RHS.shape[1]);
 
 ## Generate Code
 [(c_name, c_code), (h_name, c_header)] = sympy.utilities.codegen.codegen(
-    name_expr=('coef',sympy.Equality(coef,COEF,evaluate=False)),
+    name_expr=('eomCoef',sympy.Equality(coef,COEF,evaluate=False)),
     language='C',
     project="quad_sim",
     to_files=False,
@@ -142,7 +142,7 @@ cFile = open("./src/" + c_name,"w"); cFile.write(c_code); cFile.close();
 hFile = open("./include/" + h_name,"w"); hFile.write(c_header); hFile.close();
 
 [(c_name, c_code), (h_name, c_header)] = sympy.utilities.codegen.codegen(
-    name_expr=('rhs',sympy.Equality(rhs,RHS,evaluate=False)),
+    name_expr=('eomRhs',sympy.Equality(rhs,RHS,evaluate=False)),
     language='C',
     project="quad_sim",
     to_files=False,

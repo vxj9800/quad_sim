@@ -22,7 +22,9 @@ execute_process(
 
 # Add target
 add_executable(solve_physics
-  src/eomSolverNode.cpp
+  src/eomCoef.c
+  src/eomRhs.c
+  src/quadEomSystem.cpp
   src/solve_physics.cpp
 )
 ament_target_dependencies(solve_physics rclcpp std_msgs geometry_msgs builtin_interfaces)
