@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <!-- Provide some basic info about the package -->
+  <name>quad_sim</name>
+  <version>0.0.0</version>
+  <description>This package solves the Equations of motion for a quadcopter and publishes the system states for animation and sensor data for control.</description>
+  <maintainer email="vatsalasitkumar.joshi@mavs.uta.edu">Vatsal Joshi</maintainer>
+  <license>Apache-2.0</license>
+
+  <!-- Define dependency on external libraries -->
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>builtin_interfaces</depend>
+
+  <!-- Define execution-time dependencies -->
+  <exec_depend>ros2launch</exec_depend>
+
+  <!-- Define dependency of the build tool, CMake in this case -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Define dependency for tests -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
