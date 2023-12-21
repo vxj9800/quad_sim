@@ -15,10 +15,10 @@ find_package(Python REQUIRED)
 find_package(Boost REQUIRED)
 
 # Generate some C/C++ code using SymPy
-# execute_process(
-#   COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eomGenerator.py
-#   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-# )
+execute_process(
+  COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eomGenerator.py
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 # Add target
 add_executable(solve_physics
