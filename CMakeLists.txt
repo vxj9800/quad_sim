@@ -24,6 +24,7 @@ execute_process(
 add_executable(solve_physics
   src/eomCoef.c
   src/eomRhs.c
+  src/animStatePublisher.cpp
   src/quadEomSystem.cpp
   src/solve_physics.cpp
 )
