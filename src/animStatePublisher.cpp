@@ -94,7 +94,7 @@ void animStatePublisher::tick_PFun(double tick)
 
 void animStatePublisher::publishAnimStates(std::vector<double> stateVector, double simTime)
 {
-    if (simTime >= lastPubTime)
+    if ((simTime - lastPubTime) >= dt)
     {
         // Publish body pose
         bodyPose_PFun(std::vector<double>(&stateVector[0], &stateVector[6]));
