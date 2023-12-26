@@ -30,7 +30,7 @@ int main(int argc, char **argv)
     animStatePublisher::SharedPtr animPubNodePtr = std::make_shared<animStatePublisher>(0.01);
     rosExecutor.add_node(animPubNodePtr);
 
-    for (int i = 0; i < 10000; ++i)
+    while (rclcpp::ok())
     {
         // Wait till the real time equal to solver step size has passed
         while(std::chrono::duration_cast<std::chrono::duration<double>>((start = solverClock.now()) - lastStart).count() < quad.solverDT);
