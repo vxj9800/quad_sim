@@ -58,13 +58,13 @@ IE = sympy.MatrixSymbol('IE',6,1); # Six values of inertia tensor, IE = [IExx; I
 
 ## Define frames and bodies
 # Inertial Frame
-N = sympy.physics.mechanics.ReferenceFrame('N');
+N123 = sympy.physics.mechanics.ReferenceFrame('N123');
 No = sympy.physics.mechanics.Point('No');
-No.set_vel(N,0);
+No.set_vel(N123,0);
 
 # Define all the bodies with body attached frame and point
-A123 = N.orientnew('A123','Quaternion',(e0,e1,e2,e3));
-Ao = No.locatenew('Ao', q1*N.x + q2*N.y + q3*N.z);
+A123 = N123.orientnew('A123','Quaternion',(e0,e1,e2,e3));
+Ao = No.locatenew('Ao', q1*N123.x + q2*N123.y + q3*N123.z);
 AIAA = (sympy.physics.mechanics.inertia(A123, IA[0], IA[1], IA[2], IA[3], IA[4], IA[5]),Ao);
 A = sympy.physics.mechanics.RigidBody('A', Ao, A123, mVals[0], AIAA);
 
@@ -89,21 +89,22 @@ EIEE = (sympy.physics.mechanics.inertia(E123, IE[0], IE[1], IE[2], IE[3], IE[4],
 E = sympy.physics.mechanics.RigidBody('E', Eo, E123, mVals[4], EIEE);
 
 ## Define velocities
-A123.set_ang_vel(N,w1*A123.x + w2*A123.y + w3*A123.z);
+A123.set_ang_vel(N123,w1*A123.x + w2*A123.y + w3*A123.z);
 B123.set_ang_vel(A123,u4*A123.z);
 C123.set_ang_vel(A123,u5*A123.z);
 D123.set_ang_vel(A123,u6*A123.z);
 E123.set_ang_vel(A123,u7*A123.z);
-Ao.set_vel(N, u1*N.x + u2*N.y + u3*N.z);
-Bo.v2pt_theory(Ao,N,A123);
-Co.v2pt_theory(Ao,N,A123);
-Do.v2pt_theory(Ao,N,A123);
-Eo.v2pt_theory(Ao,N,A123);
+Ao.set_vel(N123, u1*N123.x + u2*N123.y + u3*N123.z);
+Bo.v2pt_theory(Ao,N123,A123);
+Co.v2pt_theory(Ao,N123,A123);
+Do.v2pt_theory(Ao,N123,A123);
+Eo.v2pt_theory(Ao,N123,A123);
 
 ## Apply forces and moments
 fVals = sympy.MatrixSymbol("fVals", 4, 1); # fVals = [fB; fC; fD; fE]
 tVals = sympy.MatrixSymbol("tVals", 4, 1); # tVals = [tB; tC; tD; tE]
-FList = [(Ao,-g*A.mass*N.z),(Bo,(fVals[0] - g*B.mass)*N.z),(Co,(fVals[1] - g*C.mass)*N.z),(Do,(fVals[2] - g*D.mass)*N.z),(Eo,(fVals[3] - g*E.mass)*N.z)];
+FList = [(Ao,-g*A.mass*N123.z),(Bo,-g*B.mass*N123.z),(Co,-g*C.mass*N123.z),(Do,-g*D.mass*N123.z),(Eo,-g*E.mass*N123.z),
+         (Bo,fVals[0]*A123.z),(Co,fVals[1]*A123.z),(Do,fVals[2]*A123.z),(Eo,fVals[3]*A123.z)];
 TList = [(A123, tVals[0]*A123.z - tVals[1]*A123.z + tVals[2]*A123.z - tVals[3]*A123.z),\
          (B123,-tVals[0]*A123.z),\
          (C123, tVals[1]*A123.z),\
@@ -115,7 +116,7 @@ FL = FList + TList;
 BL = [A,B,C,D,E];
 
 ## Apply Kane's method
-KM = sympy.physics.mechanics.KanesMethod(N, q_ind=[q1, q2, q3, e0, e1, e2, e3, q4, q5, q6, q7], u_ind=[u1, u2, u3, w1, w2, w3, u4, u5, u6, u7], kd_eqs=kd);
+KM = sympy.physics.mechanics.KanesMethod(N123, q_ind=[q1, q2, q3, e0, e1, e2, e3, q4, q5, q6, q7], u_ind=[u1, u2, u3, w1, w2, w3, u4, u5, u6, u7], kd_eqs=kd);
 (fr, frs) = KM.kanes_equations(bodies=BL, loads=FL);
 COEF = KM.mass_matrix_full;
 RHS = KM.forcing_full;
