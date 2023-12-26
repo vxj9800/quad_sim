@@ -23,11 +23,11 @@ int main(int argc, char **argv)
     // Initialize the solver
     odeSolver.initialize(boost::numeric::odeint::runge_kutta_fehlberg78<std::vector<double>>(), quad, quad.q, quad.solverT, quad.solverDT);
 
-    // Initialize the animStatePublisher node
+    // Initialize the ROS executor
     rclcpp::executors::MultiThreadedExecutor rosExecutor;
-    // animStatePublisher animPubNode(0.01);
-    // rclcpp::Node::SharedPtr animPubNodePtr = std::make_shared<animStatePublisher>(animPubNode);
-    animStatePublisher::SharedPtr animPubNodePtr = std::make_shared<animStatePublisher>(0.01);
+
+    // Get a shared pointer for a node object
+    std::shared_ptr<animStatePublisher> animPubNodePtr = std::make_shared<animStatePublisher>(0.01);
     rosExecutor.add_node(animPubNodePtr);
 
     while (rclcpp::ok())
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
         quad.q[10] = fmod(quad.q[10], 2 * M_PI);
 
         // Publish states for animWindow to update the plot
-        std::dynamic_pointer_cast<animStatePublisher>(animPubNodePtr)->publishAnimStates(quad.q, quad.solverT);
+        animPubNodePtr->publishAnimStates(quad.q, quad.solverT);
 
         // Allow ROS to finish publishing
         rosExecutor.spin_some();
