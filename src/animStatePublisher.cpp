@@ -97,7 +97,7 @@ void animStatePublisher::publishAnimStates(std::vector<double> stateVector, doub
     if ((simTime - lastPubTime) >= dt)
     {
         // Publish body pose
-        bodyPose_PFun(std::vector<double>(&stateVector[0], &stateVector[6]));
+        bodyPose_PFun(std::vector<double>(&stateVector[0], &stateVector[7])); // Extract position and euler angles from state vector
 
         // Publish motor angles
         motB_PFun(stateVector[7]);
