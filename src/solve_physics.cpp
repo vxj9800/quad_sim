@@ -31,9 +31,14 @@ int main(int argc, char **argv)
     rosExecutor.add_node(animPubNodePtr);
 
     while (rclcpp::ok())
+    // for (size_t i = 0; i < 10; ++i)
     {
         // Wait till the real time equal to solver step size has passed
         while(std::chrono::duration_cast<std::chrono::duration<double>>((start = solverClock.now()) - lastStart).count() < quad.solverDT);
+
+        // Get control signal, this will eventually be a blocking call if the system is supposed to run in lockstep with the GNC loop
+        // quad.fVals = {-0.001, 0.001, -0.001, 0.001};
+        quad.tVals = {0.001, 0.002, 0.001, 0.002};
 
         // Integrate the system by one step
         odeSolver.do_step(quad, quad.q, quad.solverT, quad.solverDT);
@@ -51,6 +56,12 @@ int main(int argc, char **argv)
         quad.q[8] = fmod(quad.q[8], 2 * M_PI);
         quad.q[9] = fmod(quad.q[9], 2 * M_PI);
         quad.q[10] = fmod(quad.q[10], 2 * M_PI);
+
+        // // Publish sensor values for GNC node to return control values on time
+        // animPubNodePtr->publishAnimStates(quad.q, quad.solverT);
+
+        // // Allow ROS to finish publishing
+        // rosExecutor.spin_some();
 
         // Publish states for animWindow to update the plot
         animPubNodePtr->publishAnimStates(quad.q, quad.solverT);

@@ -16,13 +16,7 @@ extern "C"
 
 // Add other external libraries
 #include <boost/numeric/odeint.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/vector.hpp>
-#include <boost/numeric/ublas/io.hpp>
-#include <boost/numeric/ublas/vector_proxy.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/triangular.hpp>
-#include <boost/numeric/ublas/lu.hpp>
+#include <Eigen/Dense>
 
 #ifndef __QUAD_EOM_SOLVER_HEADER__
 #define __QUAD_EOM_SOLVER_HEADER__
@@ -45,7 +39,7 @@ public:
     std::vector<double> pE = {0.08, -0.08, 0.015};  // pE = [lE; wE; hE];
 
     // Mass and Inertia values
-    double g = 9.81; // Gravitational constant
+    double g = 0; // = 9.81; // Gravitational constant
     std::vector<double> mVals = {
         // Mass of bodies
         0.155 + 4 * (0.021 * 0.9) + 0.5 + 0.1, // A = Frame + 4*Motor Stator + Battery + Circuit boards
@@ -76,7 +70,7 @@ public:
     //     +diag([1/12*0.0028*(0.001^2 + 0.01^2),... % Inertia dyadic of propeller
     //            1/12*0.0028*(0.001^2 + 0.127^2),... % as a cuboid of dimension 127mm X 10mm X 1mm
     //            1/12*0.0028*(0.01^2 + 0.127^2)]);
-    std::vector<double> IB = {0.079862066666667e-6, 0.453872066666667e-6, 0.530187466666667e-6}; // [IBxx; IByy; IBzz; IBxy; IByz; IBzx]
+    std::vector<double> IB = {0.079862066666667e-6, 0.453872066666667e-6, 0.530187466666667e-6, 0, 0, 0}; // [IBxx; IByy; IBzz; IBxy; IByz; IBzx]
     std::vector<double> IC = IB, ID = IB, IE = IB;
 
     // Define Propeller data

@@ -13,6 +13,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(Python REQUIRED)
 find_package(Boost REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 # Generate some C/C++ code using SymPy
 execute_process(
@@ -29,6 +30,7 @@ add_executable(solve_physics
   src/solve_physics.cpp
 )
 ament_target_dependencies(solve_physics rclcpp std_msgs geometry_msgs builtin_interfaces)
+target_link_libraries(solve_physics Eigen3::Eigen)
 target_include_directories(solve_physics PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
