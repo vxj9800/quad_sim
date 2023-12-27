@@ -26,7 +26,8 @@ void quadEomSystem::operator()(const std::vector<double> &x, std::vector<double>
 
     // Compute state derivatives
     COEF.transposeInPlace();
-    RHS = (COEF.transpose() * COEF).ldlt().solve(COEF.transpose() * RHS);
+    // RHS = (COEF.transpose() * COEF).ldlt().solve(COEF.transpose() * RHS); // Uses LU decomposition
+    RHS = COEF.fullPivHouseholderQr().solve(RHS); // Uses QR decomposition
     dx.assign(RHS.begin(), RHS.end());
     // std::cout << "q:\t";
     // for (size_t i = 0; i < (size_t)RHS.rows(); ++i)
