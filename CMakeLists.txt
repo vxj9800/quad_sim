@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.8)
+
+# Create project and make it's name available to the executables.
+# This will allow the nodes to figure out the name of the package they are in.
 project(quad_sim C CXX)
+add_compile_definitions(ROS_PACKAGE_NAME="${CMAKE_PROJECT_NAME}")
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)

@@ -5,6 +5,11 @@
 #include <quad_sim/quadEomSystem.h>
 #include <quad_sim/animStatePublisher.h>
 
+// If the package name is not defined at compile time then set it to empty
+#ifndef ROS_PACKAGE_NAME
+#define ROS_PACKAGE_NAME ""
+#endif
+
 int main(int argc, char **argv)
 {
     // Some initialization.
