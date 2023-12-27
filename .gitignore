@@ -9,8 +9,7 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
-**/*eomCoef.c
-**/*eomCoef.h
-**/*eomRhs.c
-**/*eomRhs.h
+**/*eomCoef.[c,h]
+**/*eomRhs.[c,h]
+**/*propVelocities.[c,h]
 **/.vscode

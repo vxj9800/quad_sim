@@ -100,6 +100,9 @@ Co.v2pt_theory(Ao,N123,A123);
 Do.v2pt_theory(Ao,N123,A123);
 Eo.v2pt_theory(Ao,N123,A123);
 
+## Define a matrix of propeller velocities in  A.z direction
+PROP_VELS = sympy.Matrix([Bo.vel(N123).to_matrix(B123)[2], Co.vel(N123).to_matrix(C123)[2], Do.vel(N123).to_matrix(D123)[2], Eo.vel(N123).to_matrix(E123)[2]]);
+
 ## Apply forces and moments
 fVals = sympy.MatrixSymbol("fVals", 4, 1); # fVals = [fB; fC; fD; fE]
 tVals = sympy.MatrixSymbol("tVals", 4, 1); # tVals = [tB; tC; tD; tE]
@@ -125,10 +128,12 @@ RHS = KM.forcing_full;
 Q = sympy.MatrixSymbol('Q',21,1);
 COEF = COEF.subs({q1:Q[0,0],q2:Q[1,0],q3:Q[2,0],e0:Q[3,0],e1:Q[4,0],e2:Q[5,0],e3:Q[6,0],q4:Q[7,0],q5:Q[8,0],q6:Q[9,0],q7:Q[10,0],u1:Q[11,0],u2:Q[12,0],u3:Q[13,0],w1:Q[14,0],w2:Q[15,0],w3:Q[16,0],u4:Q[17,0],u5:Q[18,0],u6:Q[19,0],u7:Q[20,0]});
 RHS = RHS.subs({q1:Q[0,0],q2:Q[1,0],q3:Q[2,0],e0:Q[3,0],e1:Q[4,0],e2:Q[5,0],e3:Q[6,0],q4:Q[7,0],q5:Q[8,0],q6:Q[9,0],q7:Q[10,0],u1:Q[11,0],u2:Q[12,0],u3:Q[13,0],w1:Q[14,0],w2:Q[15,0],w3:Q[16,0],u4:Q[17,0],u5:Q[18,0],u6:Q[19,0],u7:Q[20,0]});
+PROP_VELS = PROP_VELS.subs({q1:Q[0,0],q2:Q[1,0],q3:Q[2,0],e0:Q[3,0],e1:Q[4,0],e2:Q[5,0],e3:Q[6,0],q4:Q[7,0],q5:Q[8,0],q6:Q[9,0],q7:Q[10,0],u1:Q[11,0],u2:Q[12,0],u3:Q[13,0],w1:Q[14,0],w2:Q[15,0],w3:Q[16,0],u4:Q[17,0],u5:Q[18,0],u6:Q[19,0],u7:Q[20,0]});
 
 ## Create output variables
 coef = sympy.MatrixSymbol("coef",COEF.shape[0],COEF.shape[1]);
 rhs = sympy.MatrixSymbol("rhs",RHS.shape[0],RHS.shape[1]);
+propVels = sympy.MatrixSymbol("propVels",PROP_VELS.shape[0],PROP_VELS.shape[1]);
 
 ## Generate Code
 [(c_name, c_code), (h_name, c_header)] = sympy.utilities.codegen.codegen(
@@ -149,6 +154,17 @@ hFile = open("./include/" + h_name,"w"); hFile.write(c_header); hFile.close();
     to_files=False,
     header=True,
     argument_sequence=(Q,g,A_P_AB,A_P_AC,A_P_AD,A_P_AE,mVals,IA,IB,IC,ID,IE,fVals,tVals,rhs)
+);
+cFile = open("./src/" + c_name,"w"); cFile.write(c_code); cFile.close();
+hFile = open("./include/" + h_name,"w"); hFile.write(c_header); hFile.close();
+
+[(c_name, c_code), (h_name, c_header)] = sympy.utilities.codegen.codegen(
+    name_expr=('propVelocities',sympy.Equality(propVels,PROP_VELS,evaluate=False)),
+    language='C',
+    project="quad_sim",
+    to_files=False,
+    header=True,
+    argument_sequence=(Q,A_P_AB,A_P_AC,A_P_AD,A_P_AE,propVels)
 );
 cFile = open("./src/" + c_name,"w"); cFile.write(c_code); cFile.close();
 hFile = open("./include/" + h_name,"w"); hFile.write(c_header); hFile.close();
