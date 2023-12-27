@@ -7,7 +7,7 @@ quadEomSystem::quadEomSystem()
     solverT = 0;
 
     // Define System Initial condition
-    q = {0, 0, 0, 1, 0, 0, 0, -M_PI_4, M_PI_4, -M_PI_4, M_PI_4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    q = {0, 0, 0, 1, 0, 0, 0, -M_PI_4, M_PI_4, -M_PI_4, M_PI_4, 0, 0, 0, 0, 0, 0, -2400 / 60 * 2 * M_PI, 2400 / 60 * 2 * M_PI, -2400 / 60 * 2 * M_PI, 2400 / 60 * 2 * M_PI};
 }
 
 void quadEomSystem::operator()(const std::vector<double> &x, std::vector<double> &dx, const double t)

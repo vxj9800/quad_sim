@@ -6,6 +6,7 @@ extern "C"
 {
 #include <eomCoef.h>
 #include <eomRhs.h>
+#include <propVelocities.h>
 }
 
 // Add ROS libraries
@@ -20,6 +21,12 @@ extern "C"
 
 #ifndef __QUAD_EOM_SOLVER_HEADER__
 #define __QUAD_EOM_SOLVER_HEADER__
+
+// Model Parameter Samples // %
+// Frame : https://speedyfpv.com/products/truexs-stretched-220mm-fpv-racing-drone-frame-kit-for-5-propellers?variant=39876517363885
+// Motors : https://shop.iflight-rc.com/xing-2205-fpv-nextgen-motor-black-pro1521?search=2205
+// Battery : https://www.amazon.com/Socokin-Battery-3300mAh-Vehicles-Trucks/dp/B086GTSPQN/ref=sr_1_28?crid=21QGKY7B7764X&keywords=6s+lipo&qid=1686777293&sprefix=6s+lipo%2Caps%2C142&sr=8-28&ufe=app_do%3Aamzn1.fos.18630bbb-fcbb-42f8-9767-857e17e03685
+// Propellers : https://www.getfpv.com/lumenier-5x3-5-2-blade-propeller-set-of-4-green.html
 
 class quadEomSystem
 {
@@ -39,7 +46,7 @@ public:
     std::vector<double> pE = {0.08, -0.08, 0.015};  // pE = [lE; wE; hE];
 
     // Mass and Inertia values
-    double g = 0; // = 9.81; // Gravitational constant
+    double g = 9.81; // Gravitational constant
     std::vector<double> mVals = {
         // Mass of bodies
         0.155 + 4 * (0.021 * 0.9) + 0.5 + 0.1, // A = Frame + 4*Motor Stator + Battery + Circuit boards

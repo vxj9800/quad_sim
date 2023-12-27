@@ -29,6 +29,8 @@ execute_process(
 add_executable(solve_physics
   src/eomCoef.c
   src/eomRhs.c
+  src/propVelocities.c
+  src/propThTq.cpp
   src/animStatePublisher.cpp
   src/quadEomSystem.cpp
   src/solve_physics.cpp
@@ -48,6 +50,7 @@ install(TARGETS solve_physics
 # Move launch files to share folder
 install(DIRECTORY
   launch
+  propData
   DESTINATION share/${PROJECT_NAME}/
 )
 
