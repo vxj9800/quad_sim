@@ -31,7 +31,6 @@ extern "C"
 class quadEomSystem
 {
 private:
-
 public:
     quadEomSystem();
     void operator()(const std::vector<double> &x, std::vector<double> &dx, const double t);
@@ -83,8 +82,10 @@ public:
     // Define Propeller data
     double propDia = 0.127; // Propeller Diameter
 
-    // // Define state vector
-    // std::vector<double> q = std::vector<double>(21);
+    // Motor Properties // %
+    double Vllmax = 16.8;    // Max line to line voltage for the motor
+    double motRll = 0.07241; // Line to line resistance
+    double motKv = 2400;     // Kv rating of the motor, i.e.rpm / V
 
     // Define containers for propeller thrust and motor torque values
     std::vector<double> fVals = {0, 0, 0, 0}; // Will come from controller subscribers

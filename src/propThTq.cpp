@@ -1,4 +1,4 @@
-#include <quad_sim/propThTq.h>
+#include <quad_sim/propThTq.hpp>
 
 // Define local static variable to store propeller thrust and torque curve fit parameters
 static Eigen::VectorXd ctFitParams(3), cpFitParams(3);
@@ -193,7 +193,7 @@ void getPropThTq(double u, double alt, double propVel, double propDia, double g,
     double rho = getAirDensity(alt); // Air density in kg/m^3
 
     // Define conversion factor for rad/sec to revs/sec
-    double radpsec2revpsec = 0.159154943;
+    const double radpsec2revpsec = 0.159154943;
     
 
     // Return zero torque and thrust if the props are not rotating

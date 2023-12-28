@@ -6,9 +6,10 @@
 #include <rclcpp/rclcpp.hpp>
 
 // Add package headers
-#include <quad_sim/quadEomSystem.h>
-#include <quad_sim/animStatePublisher.h>
-#include <quad_sim/propThTq.h>
+#include <quad_sim/quadEomSystem.hpp>
+#include <quad_sim/animStatePublisher.hpp>
+#include <quad_sim/propThTq.hpp>
+#include <quad_sim/motorTq.hpp>
 
 // If the package name is not defined at compile time then set it to empty
 #ifndef ROS_PACKAGE_NAME
@@ -63,9 +64,10 @@ int main(int argc, char **argv)
         }
 
         // Get control signal, this will eventually be a blocking call if the system is supposed to run in lockstep with the GNC loop
-        // Apply motor torques
+        // Apply motor torques based on the calculated motor voltage
+        double V = 5;
         for (size_t i = 0; i < 4; ++i)
-            quad.tVals[i] += 0.0175;
+            quad.tVals[i] += motTq(quad.q[17 + i], V, quad.motRll, quad.motKv);
 
         // Wait till the real time equal to solver step size has passed
         while(std::chrono::duration_cast<std::chrono::duration<double>>((start = solverClock.now()) - lastStart).count() < quad.solverDT);

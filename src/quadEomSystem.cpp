@@ -1,5 +1,5 @@
 // Add package headers
-#include <quad_sim/quadEomSystem.h>
+#include <quad_sim/quadEomSystem.hpp>
 
 quadEomSystem::quadEomSystem()
 {

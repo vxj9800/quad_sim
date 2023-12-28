@@ -1,4 +1,4 @@
-#include <quad_sim/animStatePublisher.h>
+#include <quad_sim/animStatePublisher.hpp>
 
 animStatePublisher::animStatePublisher(double in_dt) : Node("animStatePublisher"), dt(in_dt)
 {

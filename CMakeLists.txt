@@ -31,6 +31,7 @@ add_executable(solve_physics
   src/eomRhs.c
   src/propVelocities.c
   src/propThTq.cpp
+  src/motorTq.cpp
   src/animStatePublisher.cpp
   src/quadEomSystem.cpp
   src/solve_physics.cpp
