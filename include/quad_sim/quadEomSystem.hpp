@@ -9,9 +9,6 @@ extern "C"
 #include <propVelocities.h>
 }
 
-// Add ROS libraries
-#include <builtin_interfaces/msg/time.hpp>
-
 // Add other external libraries
 #include <boost/numeric/odeint.hpp>
 #include <Eigen/Dense>
@@ -33,7 +30,6 @@ public:
     void operator()(const std::vector<double> &x, std::vector<double> &dx, const double t);
     double& getSolverT();
     double& getSolverDT();
-    void incrmntTime(builtin_interfaces::msg::Time dt);
 
     // Define state vector
     std::vector<double> q = std::vector<double>(21);
@@ -92,9 +88,9 @@ public:
     std::vector<double> tVals = {0, 0, 0, 0}; // Will come from controller subscribers
 
     // Integration parameters
-    builtin_interfaces::msg::Time solverT; // The ROS message is used here to avoid problems associated with C++ floatingpoint value comparisons
-    builtin_interfaces::msg::Time solverDT; // Ode solver time step in seconds
-    double t, dt; // Temporary variables to allow getSolverT and getSolverDt return an lvalue/double&
+    int64_t solverT_ns; // This time value is supposed to represent time in nanoseconds
+    int64_t solverDT_ns; // Ode solver time step in nanoseconds
+    double t_s, dt_s; // Temporary variables to allow getSolverT and getSolverDt return an lvalue/double&
 };
 
 #endif // __QUAD_EOM_SOLVER_HEADER__

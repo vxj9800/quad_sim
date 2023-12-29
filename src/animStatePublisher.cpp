@@ -1,6 +1,6 @@
 #include <quad_sim/animStatePublisher.hpp>
 
-animStatePublisher::animStatePublisher(builtin_interfaces::msg::Time dt) : Node("animStatePublisher"), dt(dt)
+animStatePublisher::animStatePublisher(int64_t dt_ns) : Node("animStatePublisher"), dt_ns(dt_ns)
 {
     // Initialize the Publishers
     bodyPose_Pub = this->create_publisher<geometry_msgs::msg::Pose>("quadPose", rclcpp::SensorDataQoS());
@@ -79,21 +79,23 @@ void animStatePublisher::motE_PFun(double motAng)
     motE_Pub->publish(msg);
 }
 
-void animStatePublisher::tick_PFun(builtin_interfaces::msg::Time tick)
+void animStatePublisher::tick_PFun(int64_t tick_ns)
 {
+    // Create message variable
+    builtin_interfaces::msg::Time msg;
+
+    // Add data to the message variable
+    msg.sec = tick_ns / 1000000000;
+    msg.nanosec = tick_ns % 1000000000;
+
     // Publish the message
-    tick_Pub->publish(tick);
+    tick_Pub->publish(msg);
 }
 
-bool animStatePublisher::isDtPassed(builtin_interfaces::msg::Time simTime)
-{
-    return (simTime.sec > nextPubTime.sec) || ((simTime.sec == nextPubTime.sec) && (simTime.nanosec >= nextPubTime.nanosec));
-}
-
-void animStatePublisher::publishAnimStates(std::vector<double> stateVector, builtin_interfaces::msg::Time simTime)
+void animStatePublisher::publishAnimStates(std::vector<double> stateVector, int64_t simTime_ns)
 {
     // Check if enough time has passed
-    if (isDtPassed(simTime))
+    if ((simTime_ns - lastPubTime_ns) >= dt_ns)
     {
         // Publish body pose
         bodyPose_PFun(std::vector<double>(&stateVector[0], &stateVector[7])); // Extract position and euler angles from state vector
@@ -105,12 +107,9 @@ void animStatePublisher::publishAnimStates(std::vector<double> stateVector, buil
         motE_PFun(stateVector[10]);
 
         // Publish simulation time
-        tick_PFun(simTime);
+        tick_PFun(simTime_ns);
 
         // Update next publication time
-        nextPubTime.sec = simTime.sec + dt.sec;
-        nextPubTime.nanosec = simTime.nanosec + dt.nanosec;
-        nextPubTime.sec += nextPubTime.nanosec / 1000000000;
-        nextPubTime.nanosec = nextPubTime.nanosec % 1000000000;
+        lastPubTime_ns = simTime_ns;
     }
 }

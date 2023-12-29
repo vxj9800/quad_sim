@@ -44,9 +44,7 @@ int main(int argc, char **argv)
     rclcpp::executors::MultiThreadedExecutor rosExecutor;
 
     // Get a shared pointer for a node object
-    builtin_interfaces::msg::Time animDt;
-    animDt.nanosec = 10000000;
-    std::shared_ptr<animStatePublisher> animPubNodePtr = std::make_shared<animStatePublisher>(animDt);
+    std::shared_ptr<animStatePublisher> animPubNodePtr = std::make_shared<animStatePublisher>(10000000); // 10ms
     rosExecutor.add_node(animPubNodePtr);
 
     while (rclcpp::ok())
@@ -76,7 +74,7 @@ int main(int argc, char **argv)
 
         // Integrate the system by one step
         odeSolver.do_step(quad, quad.q, quad.getSolverT(), quad.getSolverDT());
-        quad.incrmntTime(quad.solverDT);
+        quad.solverT_ns += quad.solverDT_ns;
 
         // Normalize the euler parameters
         double eNorm = sqrt(pow(quad.q[3], 2) + pow(quad.q[4], 2) + pow(quad.q[5], 2) + pow(quad.q[6], 2));
@@ -98,7 +96,7 @@ int main(int argc, char **argv)
         // rosExecutor.spin_some();
 
         // Publish states for animWindow to update the plot
-        animPubNodePtr->publishAnimStates(quad.q, quad.solverT);
+        animPubNodePtr->publishAnimStates(quad.q, quad.solverT_ns);
 
         // Allow ROS to finish publishing
         rosExecutor.spin_some();

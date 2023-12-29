@@ -13,17 +13,17 @@ class animStatePublisher : public rclcpp::Node
 {
 public:
     // Contructor
-    animStatePublisher(builtin_interfaces::msg::Time dt);
+    animStatePublisher(int64_t dt_ns);
 
     // Single function to publish everything
-    void publishAnimStates(std::vector<double> stateVector, builtin_interfaces::msg::Time simTime);
+    void publishAnimStates(std::vector<double> stateVector, int64_t simTime);
 
 private:
     // Restrict default Contructor
     animStatePublisher();
 
-    // Publishing time
-    builtin_interfaces::msg::Time dt;
+    // Publishing time in nanoseconds
+    int64_t dt_ns;
 
     // Variables for subscribers
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr bodyPose_Pub;
@@ -36,13 +36,10 @@ private:
     void motC_PFun(double motC);
     void motD_PFun(double motD);
     void motE_PFun(double motE);
-    void tick_PFun(builtin_interfaces::msg::Time tick);
+    void tick_PFun(int64_t tick);
 
-    // Function to check if enough time has passed
-    bool isDtPassed(builtin_interfaces::msg::Time simTime);
-
-    // Keep track of the simulation time for last publication
-    builtin_interfaces::msg::Time nextPubTime;
+    // Time in nanoseconds when data was last published
+    int64_t lastPubTime_ns;
 };
 
 #endif // __ANIM_STATE_PUBLISHER_HEADER__

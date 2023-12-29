@@ -3,13 +3,11 @@
 
 quadEomSystem::quadEomSystem()
 {
-    // Choose initial time
-    solverT.sec = 0;
-    solverT.nanosec = 0;
-
+    // Define initial time
+    solverT_ns = 0; // ns
+    
     // Define time-step
-    solverDT.sec = 0;
-    solverDT.nanosec = 1000000; // 1ms
+    solverDT_ns = 1000000; // 1ms
 
     // Define System Initial condition
     q = {0, 0, 0, 1, 0, 0, 0, -M_PI_4, M_PI_4, -M_PI_4, M_PI_4, 0, 0, 0, 0, 0, 0, -2400 / 60 * 2 * M_PI, 2400 / 60 * 2 * M_PI, -2400 / 60 * 2 * M_PI, 2400 / 60 * 2 * M_PI};
@@ -42,20 +40,12 @@ void quadEomSystem::operator()(const std::vector<double> &x, std::vector<double>
 
 double& quadEomSystem::getSolverT()
 {
-    t = solverT.sec + solverT.nanosec * 1e-9;
-    return t;
+    t_s = solverT_ns * 1e-9;
+    return t_s;
 }
 
 double& quadEomSystem::getSolverDT()
 {
-    dt = solverDT.sec + solverDT.nanosec * 1e-9;
-    return dt;
-}
-
-void quadEomSystem::incrmntTime(builtin_interfaces::msg::Time dt)
-{
-    solverT.sec += dt.sec;
-    solverT.nanosec += dt.nanosec;
-    solverT.sec += solverT.nanosec / 1000000000;
-    solverT.nanosec = solverT.nanosec % 1000000000;
+    dt_s = solverDT_ns * 1e-9;
+    return dt_s;
 }
