@@ -10,9 +10,6 @@ extern "C"
 }
 
 // Add ROS libraries
-#include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/float64.hpp>
-#include <geometry_msgs/msg/pose.hpp>
 #include <builtin_interfaces/msg/time.hpp>
 
 // Add other external libraries
@@ -34,6 +31,9 @@ private:
 public:
     quadEomSystem();
     void operator()(const std::vector<double> &x, std::vector<double> &dx, const double t);
+    double& getSolverT();
+    double& getSolverDT();
+    void incrmntTime(builtin_interfaces::msg::Time dt);
 
     // Define state vector
     std::vector<double> q = std::vector<double>(21);
@@ -92,8 +92,9 @@ public:
     std::vector<double> tVals = {0, 0, 0, 0}; // Will come from controller subscribers
 
     // Integration parameters
-    double solverT;
-    const double solverDT = 0.001; // Ode solver time step in seconds
+    builtin_interfaces::msg::Time solverT; // The ROS message is used here to avoid problems associated with C++ floatingpoint value comparisons
+    builtin_interfaces::msg::Time solverDT; // Ode solver time step in seconds
+    double t, dt; // Temporary variables to allow getSolverT and getSolverDt return an lvalue/double&
 };
 
 #endif // __QUAD_EOM_SOLVER_HEADER__

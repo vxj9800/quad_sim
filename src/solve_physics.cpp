@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     std::chrono::high_resolution_clock::time_point start, lastStart = solverClock.now();
 
     // Initialize the solver
-    odeSolver.initialize(boost::numeric::odeint::runge_kutta_fehlberg78<std::vector<double>>(), quad, quad.q, quad.solverT, quad.solverDT);
+    odeSolver.initialize(boost::numeric::odeint::runge_kutta_fehlberg78<std::vector<double>>(), quad, quad.q, quad.getSolverT(), quad.getSolverDT());
 
     // Initialize propeller thrust and torque model
     fitPropData(pkgShareDir + "/propData");
@@ -44,7 +44,9 @@ int main(int argc, char **argv)
     rclcpp::executors::MultiThreadedExecutor rosExecutor;
 
     // Get a shared pointer for a node object
-    std::shared_ptr<animStatePublisher> animPubNodePtr = std::make_shared<animStatePublisher>(0.01);
+    builtin_interfaces::msg::Time animDt;
+    animDt.nanosec = 10000000;
+    std::shared_ptr<animStatePublisher> animPubNodePtr = std::make_shared<animStatePublisher>(animDt);
     rosExecutor.add_node(animPubNodePtr);
 
     while (rclcpp::ok())
@@ -70,11 +72,11 @@ int main(int argc, char **argv)
             quad.tVals[i] += motTq(quad.q[17 + i], V, quad.motRll, quad.motKv);
 
         // Wait till the real time equal to solver step size has passed
-        while(std::chrono::duration_cast<std::chrono::duration<double>>((start = solverClock.now()) - lastStart).count() < quad.solverDT);
+        while(std::chrono::duration_cast<std::chrono::duration<double>>((start = solverClock.now()) - lastStart).count() < quad.getSolverDT());
 
         // Integrate the system by one step
-        odeSolver.do_step(quad, quad.q, quad.solverT, quad.solverDT);
-        quad.solverT += quad.solverDT;
+        odeSolver.do_step(quad, quad.q, quad.getSolverT(), quad.getSolverDT());
+        quad.incrmntTime(quad.solverDT);
 
         // Normalize the euler parameters
         double eNorm = sqrt(pow(quad.q[3], 2) + pow(quad.q[4], 2) + pow(quad.q[5], 2) + pow(quad.q[6], 2));
