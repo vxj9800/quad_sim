@@ -8,6 +8,7 @@
 // Add package headers
 #include <quad_sim/quadEomSystem.hpp>
 #include <quad_sim/animStatePublisher.hpp>
+#include <quad_sim/sensorDataPublisher.hpp>
 #include <quad_sim/propThTq.hpp>
 #include <quad_sim/motorTq.hpp>
 
@@ -43,9 +44,13 @@ int main(int argc, char **argv)
     // Initialize the ROS executor
     rclcpp::executors::MultiThreadedExecutor rosExecutor;
 
-    // Get a shared pointer for a node object
+    // Get a shared pointer for animation node object
     std::shared_ptr<animStatePublisher> animPubNodePtr = std::make_shared<animStatePublisher>(10000000); // 10ms
     rosExecutor.add_node(animPubNodePtr);
+
+    // Get a shared pointer for sensors node object
+    std::shared_ptr<sensorDataPublisher> sensPubNodePtr = std::make_shared<sensorDataPublisher>(1000000000, 10000000, 500000, 500000, 100000000); // 10ms
+    rosExecutor.add_node(sensPubNodePtr);
 
     while (rclcpp::ok())
     // for (size_t i = 0; i < 10; ++i)
@@ -89,11 +94,13 @@ int main(int argc, char **argv)
         quad.q[9] = fmod(quad.q[9], 2 * M_PI);
         quad.q[10] = fmod(quad.q[10], 2 * M_PI);
 
-        // // Publish sensor values for GNC node to return control values on time
-        // animPubNodePtr->publishAnimStates(quad.q, quad.solverT);
+        // Publish sensor values for GNC node to return control values on time
+        quad(quad.q, quad.qd, quad.getSolverT()); // Get state derivatives
+        sensPubNodePtr->baro_PFun(quad.q[2], quad.solverT_ns); // Publish baro data
+        sensPubNodePtr->imu_PFun(quad.q, quad.qd, quad.g, quad.solverT_ns); // Publish imu data
 
-        // // Allow ROS to finish publishing
-        // rosExecutor.spin_some();
+        // Allow ROS to finish publishing
+        rosExecutor.spin_some();
 
         // Publish states for animWindow to update the plot
         animPubNodePtr->publishAnimStates(quad.q, quad.solverT_ns);

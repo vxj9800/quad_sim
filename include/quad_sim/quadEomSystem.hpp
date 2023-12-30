@@ -32,7 +32,7 @@ public:
     double& getSolverDT();
 
     // Define state vector
-    std::vector<double> q = std::vector<double>(21);
+    std::vector<double> q = std::vector<double>(21), qd = std::vector<double>(21);
 
     // Constants for motor positions
     std::vector<double> pB = {0.08, 0.08, 0.015};   // pB = [lB; wB; hB];
