@@ -23,7 +23,7 @@ private:
     animStatePublisher();
 
     // Publishing time in nanoseconds
-    int64_t dt_ns;
+    int64_t dt_ns = 0;
 
     // Variables for subscribers
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr bodyPose_Pub;
@@ -39,7 +39,7 @@ private:
     void tick_PFun(int64_t tick_ns);
 
     // Time in nanoseconds when data was last published
-    int64_t lastPubTime_ns;
+    int64_t lastPubTime_ns = 0;
 };
 
 #endif // __ANIM_STATE_PUBLISHER_HEADER__

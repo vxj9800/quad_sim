@@ -29,7 +29,7 @@ private:
     sensorDataPublisher();
 
     // Publishing time in nanoseconds
-    int64_t dtBat_ns, dtBaro_ns, dtImu_ns, dtMag_ns, dtGps_ns;
+    int64_t dtBat_ns = 0, dtBaro_ns = 0, dtImu_ns = 0, dtMag_ns = 0, dtGps_ns = 0;
 
     // Variables for subscribers
     rclcpp::Publisher<sensor_msgs::msg::BatteryState>::SharedPtr batStat_Pub;
@@ -39,7 +39,7 @@ private:
     // rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr gps_msg;
 
     // Keep track of the simulation time for last publication, lpt = last publication time
-    int64_t bat_lpt, baro_lpt, imu_lpt, mag_lpt, gps_lpt;
+    int64_t bat_lpt = 0, baro_lpt = 0, imu_lpt = 0, mag_lpt = 0, gps_lpt = 0;
 };
 
 #endif // __SENSOR_DATA_PUBLISHER_HEADER__

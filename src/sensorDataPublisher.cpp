@@ -37,7 +37,6 @@ void sensorDataPublisher::baro_PFun(double alt, int64_t simTime_ns)
         sensor_msgs::msg::FluidPressure msg;
 
         // Add data to the message variable
-        msg.header.frame_id = "bodyA";
         msg.header.stamp.sec = simTime_ns / 1000000000;
         msg.header.stamp.nanosec = simTime_ns % 1000000000;
 
@@ -89,7 +88,6 @@ void sensorDataPublisher::imu_PFun(std::vector<double> stVect, std::vector<doubl
         sensor_msgs::msg::Imu msg;
 
         // Add data to the message variable
-        msg.header.frame_id = "bodyA";
         msg.header.stamp.sec = simTime_ns / 1000000000;
         msg.header.stamp.nanosec = simTime_ns % 1000000000;
 

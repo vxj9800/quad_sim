@@ -9,6 +9,7 @@
 #include <quad_sim/quadEomSystem.hpp>
 #include <quad_sim/animStatePublisher.hpp>
 #include <quad_sim/sensorDataPublisher.hpp>
+#include <quad_sim/controllerInSubscriber.hpp>
 #include <quad_sim/propThTq.hpp>
 #include <quad_sim/motorTq.hpp>
 
@@ -52,6 +53,10 @@ int main(int argc, char **argv)
     std::shared_ptr<sensorDataPublisher> sensPubNodePtr = std::make_shared<sensorDataPublisher>(1000000000, 10000000, 500000, 500000, 100000000); // 10ms
     rosExecutor.add_node(sensPubNodePtr);
 
+    // Get a shared pointer for controller input node object
+    std::shared_ptr<controllerInSubscriber> cntrlInSubNodePtr = std::make_shared<controllerInSubscriber>();
+    rosExecutor.add_node(cntrlInSubNodePtr);
+
     while (rclcpp::ok())
     // for (size_t i = 0; i < 10; ++i)
     {
@@ -68,18 +73,31 @@ int main(int argc, char **argv)
             quad.tVals[i] = -tq;
         }
 
+        // Wait for all the control inputs to be received
+        while (!cntrlInSubNodePtr->isInSync(quad.solverT_ns) && rclcpp::ok())
+        {
+            rosExecutor.spin_some();
+            std::cout << "solverT_ns: " << quad.solverT_ns << std::endl;
+        }
+
         // Get control signal, this will eventually be a blocking call if the system is supposed to run in lockstep with the GNC loop
         // Apply motor torques based on the calculated motor voltage
         double V = 5;
         for (size_t i = 0; i < 4; ++i)
             quad.tVals[i] += motTq(quad.q[17 + i], V, quad.motRll, quad.motKv);
 
+        // Get the arming state of the quadcopter
+        bool quadArmed = cntrlInSubNodePtr->isArmed();
+
         // Wait till the real time equal to solver step size has passed
         while(std::chrono::duration_cast<std::chrono::duration<double>>((start = solverClock.now()) - lastStart).count() < quad.getSolverDT());
 
-        // Integrate the system by one step
-        odeSolver.do_step(quad, quad.q, quad.getSolverT(), quad.getSolverDT());
-        quad.solverT_ns += quad.solverDT_ns;
+        // Integrate the system by one step only if the system is armed
+        if (quadArmed)
+        {
+            odeSolver.do_step(quad, quad.q, quad.getSolverT(), quad.getSolverDT());
+            quad.solverT_ns += quad.solverDT_ns;
+        }
 
         // Normalize the euler parameters
         double eNorm = sqrt(pow(quad.q[3], 2) + pow(quad.q[4], 2) + pow(quad.q[5], 2) + pow(quad.q[6], 2));

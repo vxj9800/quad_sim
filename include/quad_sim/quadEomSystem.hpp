@@ -88,8 +88,8 @@ public:
     std::vector<double> tVals = {0, 0, 0, 0}; // Will come from controller subscribers
 
     // Integration parameters
-    int64_t solverT_ns; // This time value is supposed to represent time in nanoseconds
-    int64_t solverDT_ns; // Ode solver time step in nanoseconds
+    int64_t solverT_ns = 0; // This time value is supposed to represent time in nanoseconds
+    int64_t solverDT_ns = 0; // Ode solver time step in nanoseconds
     double t_s, dt_s; // Temporary variables to allow getSolverT and getSolverDt return an lvalue/double&
 };
 
