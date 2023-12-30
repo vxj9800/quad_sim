@@ -11,12 +11,8 @@ void controllerInSubscriber::armState_Scb(quad_sim_interfaces::msg::ArmState msg
     armed = msg.armed;
 }
 
-bool controllerInSubscriber::isArmed()
+bool controllerInSubscriber::getArmState(int64_t &timeStamp)
 {
+    timeStamp = armState_lts;
     return armed;
-}
-
-bool controllerInSubscriber::isInSync(const int64_t &simTime_ns)
-{
-    return (armState_lts == simTime_ns);
 }

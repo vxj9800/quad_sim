@@ -19,7 +19,6 @@ void sensorDataPublisher::batStat_PFun(double voltage, int64_t simTime_ns)
         sensor_msgs::msg::BatteryState msg;
 
         // Add data to the message variable
-        msg.header.frame_id = "bodyA";
         msg.header.stamp.sec = simTime_ns / 1000000000;
         msg.header.stamp.nanosec = simTime_ns % 1000000000;
 

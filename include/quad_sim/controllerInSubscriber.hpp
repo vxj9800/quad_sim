@@ -14,10 +14,7 @@ public:
     controllerInSubscriber();
 
     // Provide arming state
-    bool isArmed();
-
-    // Blocking function, waits for all time-stamps to match
-    bool isInSync(const int64_t &simTime_ns);
+    bool getArmState(int64_t &timeStamp);
 
 private:
     // Variables for subscribers

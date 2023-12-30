@@ -73,13 +73,6 @@ int main(int argc, char **argv)
             quad.tVals[i] = -tq;
         }
 
-        // Wait for all the control inputs to be received
-        while (!cntrlInSubNodePtr->isInSync(quad.solverT_ns) && rclcpp::ok())
-        {
-            rosExecutor.spin_some();
-            std::cout << "solverT_ns: " << quad.solverT_ns << std::endl;
-        }
-
         // Get control signal, this will eventually be a blocking call if the system is supposed to run in lockstep with the GNC loop
         // Apply motor torques based on the calculated motor voltage
         double V = 5;
@@ -87,7 +80,8 @@ int main(int argc, char **argv)
             quad.tVals[i] += motTq(quad.q[17 + i], V, quad.motRll, quad.motKv);
 
         // Get the arming state of the quadcopter
-        bool quadArmed = cntrlInSubNodePtr->isArmed();
+        int64_t armStateTS;
+        bool quadArmed = cntrlInSubNodePtr->getArmState(armStateTS);
 
         // Wait till the real time equal to solver step size has passed
         while(std::chrono::duration_cast<std::chrono::duration<double>>((start = solverClock.now()) - lastStart).count() < quad.getSolverDT());
