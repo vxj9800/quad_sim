@@ -16,7 +16,7 @@ public:
     animStatePublisher(int64_t dt_ns);
 
     // Single function to publish everything
-    void publishAnimStates(std::vector<double> stateVector, int64_t simTime);
+    void publishAnimStates(std::vector<double> stateVector, int64_t simTime_ns);
 
 private:
     // Restrict default Contructor
@@ -36,7 +36,7 @@ private:
     void motC_PFun(double motC);
     void motD_PFun(double motD);
     void motE_PFun(double motE);
-    void tick_PFun(int64_t tick);
+    void tick_PFun(int64_t tick_ns);
 
     // Time in nanoseconds when data was last published
     int64_t lastPubTime_ns;
