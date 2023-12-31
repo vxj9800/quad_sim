@@ -109,7 +109,7 @@ void animStatePublisher::publishAnimStates(std::vector<double> stateVector, int6
         // Publish simulation time
         tick_PFun(simTime_ns);
 
-        // Update next publication time
+        // Update last publication time
         lastPubTime_ns = simTime_ns;
     }
 }

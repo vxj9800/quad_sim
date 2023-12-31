@@ -78,6 +78,9 @@ public:
     // Define Propeller data
     double propDia = 0.127; // Propeller Diameter
 
+    // Battery properties
+    double battVolts = 16.8; // Average battery voltage
+
     // Motor Properties // %
     double Vllmax = 16.8;    // Max line to line voltage for the motor
     double motRll = 0.07241; // Line to line resistance

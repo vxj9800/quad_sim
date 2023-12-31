@@ -81,7 +81,7 @@ std::vector<double> linAccInBodyFrame(const std::vector<double> &stVect, const s
 void sensorDataPublisher::imu_PFun(std::vector<double> stVect, std::vector<double> stDerVect, double g, int64_t simTime_ns)
 {
     // Check if enough time has passed
-    if ((simTime_ns - bat_lpt) >= dtBat_ns)
+    if ((simTime_ns - imu_lpt) >= dtImu_ns)
     {
         // Create message variable
         sensor_msgs::msg::Imu msg;
@@ -107,5 +107,8 @@ void sensorDataPublisher::imu_PFun(std::vector<double> stVect, std::vector<doubl
 
         // Publish the message
         imu_Pub->publish(msg);
+
+        // Update last publication time
+        imu_lpt = simTime_ns;
     }
 }

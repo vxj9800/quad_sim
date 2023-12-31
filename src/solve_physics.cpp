@@ -73,11 +73,13 @@ int main(int argc, char **argv)
             quad.tVals[i] = -tq;
         }
 
-        // Get control signal, this will eventually be a blocking call if the system is supposed to run in lockstep with the GNC loop
+        // Get control signal, motor voltages from esc signals
+        std::vector<double> motVolts(4);
+        cntrlInSubNodePtr->getMotVolts(quad.battVolts, motVolts);
+
         // Apply motor torques based on the calculated motor voltage
-        double V = 5;
         for (size_t i = 0; i < 4; ++i)
-            quad.tVals[i] += motTq(quad.q[17 + i], V, quad.motRll, quad.motKv);
+            quad.tVals[i] += motTq(quad.q[17 + i], motVolts[i], quad.motRll, quad.motKv);
 
         // Get the arming state of the quadcopter
         int64_t armStateTS;
