@@ -71,11 +71,23 @@ void sensorDataPublisher::baro_PFun(double alt, int64_t simTime_ns)
 
 std::vector<double> linAccInBodyFrame(const std::vector<double> &stVect, const std::vector<double> &stDerVect, const double &g)
 {
-    std::vector<double> accInBodyFrame(3);
-    accInBodyFrame[0] = (pow(stVect[3], 2) + pow(stVect[4], 2) - pow(stVect[5], 2) - pow(stVect[6], 2)) * stDerVect[0] + (2 * (stVect[4] * stVect[5] - stVect[3] * stVect[6])) * stDerVect[1] + (2 * (stVect[4] * stVect[6] + stVect[3] * stVect[5])) * (stDerVect[2] - g);
-    accInBodyFrame[1] = (2 * (stVect[4] * stVect[5] + stVect[3] * stVect[6])) * stDerVect[0] + (pow(stVect[3], 2) - pow(stVect[4], 2) + pow(stVect[5], 2) - pow(stVect[6], 2)) * stDerVect[1] + (2 * (stVect[5] * stVect[6] - stVect[3] * stVect[4])) * (stDerVect[2] - g);
-    accInBodyFrame[2] = (2 * (stVect[4] * stVect[6] - stVect[3] * stVect[5])) * stDerVect[0] + (2 * (stVect[5] * stVect[6] + stVect[3] * stVect[4])) * stDerVect[1] + (pow(stVect[3], 2) - pow(stVect[4], 2) - pow(stVect[5], 2) + pow(stVect[6], 2)) * (stDerVect[2] - g);
-    return accInBodyFrame;
+    Eigen::Matrix3d R_NA;
+    Eigen::Vector3d linAcc;
+
+    // Copy linear acceleration values
+    linAcc << stDerVect[11], stDerVect[12], stDerVect[13] - g;
+
+    // Define the ortation matrix
+    R_NA << pow(stVect[3], 2) + pow(stVect[4], 2) - pow(stVect[5], 2) - pow(stVect[6], 2), 2 * (stVect[4] * stVect[5] - stVect[3] * stVect[6]), 2 * (stVect[4] * stVect[6] + stVect[3] * stVect[5]),
+        2 * (stVect[4] * stVect[5] + stVect[3] * stVect[6]), pow(stVect[3], 2) - pow(stVect[4], 2) + pow(stVect[5], 2) - pow(stVect[6], 2), 2 * (stVect[5] * stVect[6] - stVect[3] * stVect[4]),
+        2 * (stVect[4] * stVect[6] - stVect[3] * stVect[5]), 2 * (stVect[5] * stVect[6] + stVect[3] * stVect[4]), pow(stVect[3], 2) - pow(stVect[4], 2) - pow(stVect[5], 2) + pow(stVect[6], 2);
+    R_NA = R_NA / (pow(stVect[3], 2) + pow(stVect[4], 2) + pow(stVect[5], 2) + pow(stVect[6], 2));
+
+    // Apply the rotation
+    linAcc = R_NA.transpose() * linAcc;
+
+    // Return the value
+    return std::vector<double>(linAcc.data(), linAcc.data() + linAcc.rows() * linAcc.cols());
 }
 
 void sensorDataPublisher::imu_PFun(std::vector<double> stVect, std::vector<double> stDerVect, double g, int64_t simTime_ns)

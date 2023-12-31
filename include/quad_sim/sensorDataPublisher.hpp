@@ -2,6 +2,7 @@
 
 // Add ROS libraries
 #include <rclcpp/rclcpp.hpp>
+#include <Eigen/Dense>
 #include <sensor_msgs/msg/battery_state.hpp>
 #include <sensor_msgs/msg/fluid_pressure.hpp>
 #include <sensor_msgs/msg/imu.hpp>
