@@ -19,6 +19,6 @@ void fitPropData(std::filesystem::path propDataDir);
 
 double getAirDensity(double alt);
 
-void getPropThTq(double u, double alt, double propVel, double propDia, double g, double &th, double &tq);
+void getPropThTq(bool ccwProp, double u, double alt, double propVel, double propDia, double g, double &th, double &tq);
 
 #endif // __PROP_TH_TQ_HEADER__

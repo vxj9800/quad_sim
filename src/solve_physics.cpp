@@ -68,9 +68,9 @@ int main(int argc, char **argv)
         double th, tq;
         for (size_t i = 0; i < 4; ++i)
         {
-            getPropThTq(quad.q[17 + i], quad.q[2], propVels(i), quad.propDia, quad.g, th, tq); // Thrust and torque on motor B
+            getPropThTq((i & 1), quad.q[17 + i], quad.q[2], propVels(i), quad.propDia, quad.g, th, tq); // Thrust and torque on motor B
             quad.fVals[i] = th;
-            quad.tVals[i] = ((i & 1) ? -1 : 1) * tq;
+            quad.tVals[i] = tq;
         }
 
         // Get control signal, motor voltages from esc signals

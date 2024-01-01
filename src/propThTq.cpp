@@ -165,8 +165,9 @@ double getAirDensity(double alt)
     return p / (0.2869 * (T + 273.1));
 }
 
-void getPropThTq(double u, double alt, double propVel, double propDia, double g, double &th, double &tq)
+void getPropThTq(bool ccwProp, double u, double alt, double propVel, double propDia, double g, double &th, double &tq)
 {
+    // ccwProp = True if the CCW rotation of prop generates positive thrust
     // u = Angular velocity of the motor/propeller in rad/sec
     // alt = Altitude of the propeller in meters.
     // propVel = Translational velocity of the propeller in the direction of
@@ -194,7 +195,6 @@ void getPropThTq(double u, double alt, double propVel, double propDia, double g,
 
     // Define conversion factor for rad/sec to revs/sec
     const double radpsec2revpsec = 0.159154943;
-    
 
     // Return zero torque and thrust if the props are not rotating
     if (u == 0)
@@ -204,28 +204,39 @@ void getPropThTq(double u, double alt, double propVel, double propDia, double g,
         return;
     }
 
-    // Technically the motors rotate in both CC and CCW directions,
-    // and based on the propeller type, either rotation can produce
-    // positive thrust. However, here it is assumed that the motor
-    // rotation and propeller type is matched correctly so that the
-    // thrust produced will always lift the propeller.
-    u = abs(u);
-
-    // Calculate advancement ratio
-    if (propVel < 0) 
-        J = 0;
-    else
+    // Calculate thrust and torque coefficients from the curvefit
+    if (ccwProp)
+    {
+        // Calculate advancement ratio
         J = propVel / (u * radpsec2revpsec) / propDia;
+        J = (J < 0) ? 0 : J;
 
-    // Calculate thrust and torque coefficient from curve-fit coefficients
-    // The coefficients should follow format given below
-    // y = coef(0)*x^0 + coef(1)*x^1 + coef(3)*x^2
-    double C_T = ctFitParams(0) + ctFitParams(1) * J + ctFitParams(2) * J * J;
-    double C_Q = cpFitParams(0) + cpFitParams(1) * J + cpFitParams(2) * J * J;
+        // Calculate thrust and torque coefficient from curve-fit coefficients
+        // The coefficients should follow format given below
+        // y = coef(0)*x^0 + coef(1)*x^1 + coef(3)*x^2
+        double C_T = ctFitParams(0) + ctFitParams(1) * J + ctFitParams(2) * J * J;
+        double C_Q = cpFitParams(0) + cpFitParams(1) * J + cpFitParams(2) * J * J;
 
-    // Calculate the thrust and the torque
-    th = C_T * rho * pow(u * radpsec2revpsec,2) * pow(propDia, 4);
-    tq = C_Q * rho * pow(u * radpsec2revpsec,2) * pow(propDia, 5);
+        // Calculate thrust and torque value
+        th = C_T * rho * pow(u * radpsec2revpsec, 2) * pow(propDia, 4);
+        tq = -C_Q * rho * pow(u * radpsec2revpsec, 2) * pow(propDia, 5);
+    }
+    else
+    {
+        // Calculate advancement ratio
+        J = -propVel / (u * radpsec2revpsec) / propDia;
+        J = (J < 0) ? 0 : J;
+
+        // Calculate thrust and torque coefficient from curve-fit coefficients
+        // The coefficients should follow format given below
+        // y = coef(0)*x^0 + coef(1)*x^1 + coef(3)*x^2
+        double C_T = ctFitParams(0) + ctFitParams(1) * J + ctFitParams(2) * J * J;
+        double C_Q = cpFitParams(0) + cpFitParams(1) * J + cpFitParams(2) * J * J;
+
+        // Calculate thrust and torque value
+        th = C_T * rho * pow(u * radpsec2revpsec, 2) * pow(propDia, 4);
+        tq = C_Q * rho * pow(u * radpsec2revpsec, 2) * pow(propDia, 5);
+    }
 
     // Convert kgf unit to N unit
     th = th * g;
