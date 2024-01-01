@@ -108,10 +108,10 @@ fVals = sympy.MatrixSymbol("fVals", 4, 1); # fVals = [fB; fC; fD; fE]
 tVals = sympy.MatrixSymbol("tVals", 4, 1); # tVals = [tB; tC; tD; tE]
 FList = [(Ao,-g*A.mass*N123.z),(Bo,-g*B.mass*N123.z),(Co,-g*C.mass*N123.z),(Do,-g*D.mass*N123.z),(Eo,-g*E.mass*N123.z),
          (Bo,fVals[0]*A123.z),(Co,fVals[1]*A123.z),(Do,fVals[2]*A123.z),(Eo,fVals[3]*A123.z)];
-TList = [(A123, tVals[0]*A123.z - tVals[1]*A123.z + tVals[2]*A123.z - tVals[3]*A123.z),\
-         (B123,-tVals[0]*A123.z),\
+TList = [(A123, - tVals[0]*A123.z - tVals[1]*A123.z - tVals[2]*A123.z - tVals[3]*A123.z),\
+         (B123, tVals[0]*A123.z),\
          (C123, tVals[1]*A123.z),\
-         (D123,-tVals[2]*A123.z),\
+         (D123, tVals[2]*A123.z),\
          (E123, tVals[3]*A123.z)];
 FL = FList + TList;
 
