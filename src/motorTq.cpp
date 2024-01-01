@@ -1,7 +1,8 @@
 #include <quad_sim/motorTq.hpp>
 
-double motTq(double u, double V, double motRll, double motKv)
+double motTq(bool ccwMotor, double u, double V, double motRll, double motKv)
 {
+    // ccwMotor = True if the motor rotates in CCW direction when V is positive.
     // u = current angular velocity of the motor in rad/sec
     // V = Voltage applied
     // motRll = Line-To-Line resistance of the motor winding
@@ -22,9 +23,6 @@ double motTq(double u, double V, double motRll, double motKv)
     // Define necessary variables
     double Rphi, Kt, Kb;
 
-    // The motors are assumed to be rotating in one direction only
-    u = abs(u);
-
     // Define conversion factor for rad/sec to revs/min
     const double radpsec2revpmin = 9.5492968;
 
@@ -39,6 +37,9 @@ double motTq(double u, double V, double motRll, double motKv)
 
     Kb = Kt;
 
+    // Account for rotation direction
+    V *= ccwMotor ? 1 : -1;
+    
     // Calculate the torque produced by the motor
     return Kt * (V - Kb * u * radpsec2revpmin) / Rphi;
 }

@@ -70,7 +70,7 @@ int main(int argc, char **argv)
         {
             getPropThTq(quad.q[17 + i], quad.q[2], propVels(i), quad.propDia, quad.g, th, tq); // Thrust and torque on motor B
             quad.fVals[i] = th;
-            quad.tVals[i] = -tq;
+            quad.tVals[i] = ((i & 1) ? -1 : 1) * tq;
         }
 
         // Get control signal, motor voltages from esc signals
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 
         // Apply motor torques based on the calculated motor voltage
         for (size_t i = 0; i < 4; ++i)
-            quad.tVals[i] += motTq(quad.q[17 + i], motVolts[i], quad.motRll, quad.motKv);
+            quad.tVals[i] += motTq((i & 1), quad.q[17 + i], motVolts[i], quad.motRll, quad.motKv);
 
         // Get the arming state of the quadcopter
         int64_t armStateTS;
