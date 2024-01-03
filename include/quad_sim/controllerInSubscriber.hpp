@@ -15,7 +15,7 @@ public:
     controllerInSubscriber();
 
     // Provide arming state
-    bool getArmState(int64_t &timeStamp);
+    bool getArmState();
 
     // Provide motor voltages
     void getMotVolts(const double &battVolts, std::vector<double> &motVolts);
@@ -32,9 +32,6 @@ private:
     // Variables to store received data
     bool armed = false;
     double escB = 0, escC = 0, escD = 0, escE = 0;
-
-    // Keep track of last time-stamp in nanoseconds
-    int64_t armState_lts = 0, motEsc_lts = 0;
 };
 
 #endif // __CONTROLLER_IN_SUBSCRIBER_HEADER__

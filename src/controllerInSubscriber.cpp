@@ -8,13 +8,11 @@ controllerInSubscriber::controllerInSubscriber() : Node("controllerInSubscriber"
 
 void controllerInSubscriber::armState_SCb(quad_sim_interfaces::msg::ArmState msg)
 {
-    armState_lts = msg.header.stamp.sec * (int64_t)1000000000 + msg.header.stamp.nanosec;
     armed = msg.armed;
 }
 
 void controllerInSubscriber::motEsc_SCb(quad_sim_interfaces::msg::QuadESC msg)
 {
-    motEsc_lts = msg.header.stamp.sec * (int64_t)1000000000 + msg.header.stamp.nanosec;
     escB = msg.mot_b;
     escC = msg.mot_c;
     escD = msg.mot_d;
@@ -29,8 +27,7 @@ void controllerInSubscriber::getMotVolts(const double &battVolts, std::vector<do
     motVolts[3] = battVolts * escE;
 }
 
-bool controllerInSubscriber::getArmState(int64_t &timeStamp)
+bool controllerInSubscriber::getArmState()
 {
-    timeStamp = armState_lts;
     return armed;
 }

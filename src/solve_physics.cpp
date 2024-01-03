@@ -87,8 +87,7 @@ int main(int argc, char **argv)
             quad.tVals[i] += motTq((i & 1), quad.q[17 + i], motVolts[i], quad.motRll, quad.motKv);
 
         // Get the arming state of the quadcopter
-        int64_t armStateTS;
-        bool quadArmed = cntrlInSubNodePtr->getArmState(armStateTS);
+        bool quadArmed = cntrlInSubNodePtr->getArmState();
 
         // Wait till the real time equal to solver step size has passed
         while(std::chrono::duration_cast<std::chrono::duration<double>>((start = solverClock.now()) - lastStart).count() < quad.getSolverDT());
