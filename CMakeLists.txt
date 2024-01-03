@@ -16,6 +16,7 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
+find_package(rosgraph_msgs REQUIRED)
 find_package(quad_sim_interfaces REQUIRED)
 find_package(Python REQUIRED)
 find_package(Boost REQUIRED)
@@ -34,13 +35,14 @@ add_executable(solve_physics
   src/propVelocities.c
   src/propThTq.cpp
   src/motorTq.cpp
+  src/simTimePublisher.cpp
   src/animStatePublisher.cpp
   src/sensorDataPublisher.cpp
   src/controllerInSubscriber.cpp
   src/quadEomSystem.cpp
   src/solve_physics.cpp
 )
-ament_target_dependencies(solve_physics rclcpp std_msgs geometry_msgs builtin_interfaces quad_sim_interfaces sensor_msgs)
+ament_target_dependencies(solve_physics rclcpp std_msgs geometry_msgs builtin_interfaces rosgraph_msgs quad_sim_interfaces sensor_msgs)
 target_link_libraries(solve_physics Eigen3::Eigen)
 target_include_directories(solve_physics PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

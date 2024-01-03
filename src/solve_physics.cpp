@@ -7,6 +7,7 @@
 
 // Add package headers
 #include <quad_sim/quadEomSystem.hpp>
+#include <quad_sim/simTimePublisher.hpp>
 #include <quad_sim/animStatePublisher.hpp>
 #include <quad_sim/sensorDataPublisher.hpp>
 #include <quad_sim/controllerInSubscriber.hpp>
@@ -44,6 +45,10 @@ int main(int argc, char **argv)
 
     // Initialize the ROS executor
     rclcpp::executors::MultiThreadedExecutor rosExecutor;
+
+    // Get a shared pointer for simulation time publisher object
+    std::shared_ptr<simTimePublisher> simTimePubPtr = std::make_shared<simTimePublisher>();
+    rosExecutor.add_node(simTimePubPtr);
 
     // Get a shared pointer for animation node object
     std::shared_ptr<animStatePublisher> animPubNodePtr = std::make_shared<animStatePublisher>(10000000); // 10ms
@@ -94,6 +99,12 @@ int main(int argc, char **argv)
             odeSolver.do_step(quad, quad.q, quad.getSolverT(), quad.getSolverDT());
             quad.solverT_ns += quad.solverDT_ns;
         }
+
+        // Publish new simulation time
+        simTimePubPtr->simTime_PFn(quad.solverT_ns);
+
+        // Allow ROS to finish publishing
+        rosExecutor.spin_some();
 
         // Normalize the euler parameters
         double eNorm = sqrt(pow(quad.q[3], 2) + pow(quad.q[4], 2) + pow(quad.q[5], 2) + pow(quad.q[6], 2));
