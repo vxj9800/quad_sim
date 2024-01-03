@@ -6,13 +6,15 @@ def generate_launch_description():
         Node(
             package='quad_anim',
             executable='anim_window',
+            parameters=[{
+                'use_sim_time': True
+            }],
         ),
         Node(
             package='quad_sim',
             executable='solve_physics',
             parameters=[{
                 'use_sim_time': True
-            }],
-            output='screen',
+            }]
         )
     ])

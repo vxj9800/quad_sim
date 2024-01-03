@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     rosExecutor.add_node(animPubNodePtr);
 
     // Get a shared pointer for sensors node object
-    std::shared_ptr<sensorDataPublisher> sensPubNodePtr = std::make_shared<sensorDataPublisher>(1000000000, 1000000000, 500000); // 10ms
+    std::shared_ptr<sensorDataPublisher> sensPubNodePtr = std::make_shared<sensorDataPublisher>(1000000000, 10000000, 500000); // 10ms
     rosExecutor.add_node(sensPubNodePtr);
 
     // Get a shared pointer for controller input node object
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
         rosExecutor.spin_some();
 
         // Publish states for animWindow to update the plot
-        animPubNodePtr->publishAnimStates(quad.q, quad.solverT_ns);
+        animPubNodePtr->publishAnimStates(quad.q);
 
         // Allow ROS to finish publishing
         rosExecutor.spin_some();
