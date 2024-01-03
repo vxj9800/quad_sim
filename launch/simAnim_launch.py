@@ -10,6 +10,9 @@ def generate_launch_description():
         Node(
             package='quad_sim',
             executable='solve_physics',
+            parameters=[{
+                'use_sim_time': True
+            }],
             output='screen',
         )
     ])

@@ -1,43 +1,49 @@
 #include <quad_sim/sensorDataPublisher.hpp>
 
-sensorDataPublisher::sensorDataPublisher(int64_t dtBat_ns, int64_t dtBaro_ns, int64_t dtImu_ns, int64_t dtMag_ns, int64_t dtGps_ns) : Node("sensorDataPublisher"), dtBat_ns(dtBat_ns), dtBaro_ns(dtBaro_ns), dtImu_ns(dtImu_ns), dtMag_ns(dtMag_ns), dtGps_ns(dtGps_ns)
+sensorDataPublisher::sensorDataPublisher(int64_t dtBat_ns, int64_t dtBaro_ns, int64_t dtImu_ns) : Node("sensorDataPublisher"), dtBat(dtBat_ns / 1000000000, dtBat_ns % 1000000000), dtBaro(dtBaro_ns / 1000000000, dtBaro_ns % 1000000000), dtImu(dtImu_ns / 1000000000, dtImu_ns % 1000000000), bat_lpt(int64_t(0), RCL_ROS_TIME), baro_lpt(bat_lpt), imu_lpt(bat_lpt)
 {
     // Initialize the Publishers
     batStat_Pub = this->create_publisher<sensor_msgs::msg::BatteryState>("batStat", rclcpp::SensorDataQoS());
     baro_Pub = this->create_publisher<sensor_msgs::msg::FluidPressure>("baro", rclcpp::SensorDataQoS());
     imu_Pub = this->create_publisher<sensor_msgs::msg::Imu>("imu", rclcpp::SensorDataQoS());
-    // mag_Pub = this->create_publisher<sensor_msgs::msg::MagneticField>("mag", rclcpp::SensorDataQoS());
-    // gps_msg = this->create_publisher<sensor_msgs::msg::NavSatFix>("gps", rclcpp::SensorDataQoS());
 }
 
-void sensorDataPublisher::batStat_PFun(double voltage, int64_t simTime_ns)
+void sensorDataPublisher::batStat_PFun(double voltage)
 {
+    // Get current time
+    rclcpp::Time timeNow = now();
+
     // Check if enough time has passed
-    if ((simTime_ns - bat_lpt) >= dtBat_ns)
+    if ((bat_lpt + dtBat) <= timeNow)
     {
         // Create message variable
         sensor_msgs::msg::BatteryState msg;
 
         // Add data to the message variable
-        msg.header.stamp.sec = simTime_ns / 1000000000;
-        msg.header.stamp.nanosec = simTime_ns % 1000000000;
+        msg.header.stamp = timeNow;
+        msg.voltage = voltage;
 
         // Publish the message
         batStat_Pub->publish(msg);
+
+        // Update lpt
+        bat_lpt = timeNow;
     }
 }
 
-void sensorDataPublisher::baro_PFun(double alt, int64_t simTime_ns)
+void sensorDataPublisher::baro_PFun(double alt)
 {
+    // Get current time
+    rclcpp::Time timeNow = now();
+
     // Check if enough time has passed
-    if ((simTime_ns - baro_lpt) >= dtBaro_ns)
+    if ((baro_lpt + dtBaro) <= timeNow)
     {
         // Create message variable
         sensor_msgs::msg::FluidPressure msg;
 
         // Add data to the message variable
-        msg.header.stamp.sec = simTime_ns / 1000000000;
-        msg.header.stamp.nanosec = simTime_ns % 1000000000;
+        msg.header.stamp = timeNow;
 
         // This implementation is based on https://www.grc.nasa.gov/www/k-12/airplane/atmosmet.html article.
         // Altitude is assumed to be in meters.
@@ -66,6 +72,9 @@ void sensorDataPublisher::baro_PFun(double alt, int64_t simTime_ns)
 
         // Publish the message
         baro_Pub->publish(msg);
+
+        // Update lpt
+        baro_lpt = timeNow;
     }
 }
 
@@ -90,17 +99,19 @@ std::vector<double> linAccInBodyFrame(const std::vector<double> &stVect, const s
     return std::vector<double>(linAcc.data(), linAcc.data() + linAcc.rows() * linAcc.cols());
 }
 
-void sensorDataPublisher::imu_PFun(std::vector<double> stVect, std::vector<double> stDerVect, double g, int64_t simTime_ns)
+void sensorDataPublisher::imu_PFun(std::vector<double> stVect, std::vector<double> stDerVect, double g)
 {
+    // Get current time
+    rclcpp::Time timeNow = now();
+
     // Check if enough time has passed
-    if ((simTime_ns - imu_lpt) >= dtImu_ns)
+    if ((imu_lpt + dtImu) <= timeNow)
     {
         // Create message variable
         sensor_msgs::msg::Imu msg;
 
         // Add data to the message variable
-        msg.header.stamp.sec = simTime_ns / 1000000000;
-        msg.header.stamp.nanosec = simTime_ns % 1000000000;
+        msg.header.stamp = timeNow;
 
         msg.orientation.w = stVect[3];
         msg.orientation.x = stVect[4];
@@ -121,6 +132,6 @@ void sensorDataPublisher::imu_PFun(std::vector<double> stVect, std::vector<doubl
         imu_Pub->publish(msg);
 
         // Update last publication time
-        imu_lpt = simTime_ns;
+        imu_lpt = timeNow;
     }
 }

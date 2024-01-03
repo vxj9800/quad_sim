@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     rosExecutor.add_node(animPubNodePtr);
 
     // Get a shared pointer for sensors node object
-    std::shared_ptr<sensorDataPublisher> sensPubNodePtr = std::make_shared<sensorDataPublisher>(1000000000, 10000000, 500000, 500000, 100000000); // 10ms
+    std::shared_ptr<sensorDataPublisher> sensPubNodePtr = std::make_shared<sensorDataPublisher>(1000000000, 1000000000, 500000); // 10ms
     rosExecutor.add_node(sensPubNodePtr);
 
     // Get a shared pointer for controller input node object
@@ -121,8 +121,8 @@ int main(int argc, char **argv)
 
         // Publish sensor values for GNC node to return control values on time
         quad(quad.q, quad.qd, quad.getSolverT()); // Get state derivatives
-        sensPubNodePtr->baro_PFun(quad.q[2], quad.solverT_ns); // Publish baro data
-        sensPubNodePtr->imu_PFun(quad.q, quad.qd, quad.g, quad.solverT_ns); // Publish imu data
+        sensPubNodePtr->baro_PFun(quad.q[2]); // Publish baro data
+        sensPubNodePtr->imu_PFun(quad.q, quad.qd, quad.g); // Publish imu data
 
         // Allow ROS to finish publishing
         rosExecutor.spin_some();
